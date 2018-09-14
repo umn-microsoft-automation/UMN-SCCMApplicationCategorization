@@ -1,0 +1,13 @@
+﻿<Window x:Name="CategoryChooserWindow" x:Class="UMN_SCCMApplicationCategorization.CategoryChooser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UMN_SCCMApplicationCategorization"
+        mc:Ignorable="d"
+        Title="CategoryChooser" Height="300" Width="300" ResizeMode="NoResize">
+    <DockPanel>
+        <Button x:Name="CategoryOK" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Content="OK" Margin="5,5,5,5" Padding="5,5,5,5" Click="CategoryOK_Click" Style="{StaticResource AccentedSquareButtonStyle}"/>
+        <ListBox x:Name="CategoriesListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding}" ScrollViewer.CanContentScroll="True"/>
+    </DockPanel>
+</Window>
