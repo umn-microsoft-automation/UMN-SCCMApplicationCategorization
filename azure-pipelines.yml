@@ -63,8 +63,12 @@ steps:
 - task: DeleteFiles@1
   inputs:
     SourceFolder: 
-    Contents: '**\Microsoft.ConfigurationManagement.ManagementProvider.dll
-      **\AdminUI.WqlQueryEngine.dll'
+    Contents: '**\Microsoft.ConfigurationManagement.ManagementProvider.dll*'
+
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: 
+    Contents: '**\AdminUI.WqlQueryEngine.dll*'
 
 - task: CopyFiles@2
   inputs:
