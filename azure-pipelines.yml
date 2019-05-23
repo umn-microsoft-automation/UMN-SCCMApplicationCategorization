@@ -4,7 +4,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- master
+ branches:
+   include:
+     - '*' # Trigger builds on all branches
+
+pr:
+  branches:
+    include:
+      - master
 
 pool:
   vmImage: 'windows-latest'
@@ -14,8 +21,12 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+name: $(Date:yyyy).$(Date:MM).$(Date:dd).$(BuildID)
+
 steps:
 - task: NuGetToolInstaller@0
+  inputs:
+    checkLatest: true
 
 - task: NuGetCommand@2
   inputs:
@@ -23,6 +34,20 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
     vstsFeed: '/aeea8857-f430-496d-a11b-5968b96e1107'
+
+- task: Assembly-Info-NetFramework@2
+  inputs:
+    Path: '$(Build.SourcesDirectory)'
+    FileNames: '**\AssemblyInfo.cs'
+    InsertAttributes: true
+    FileEncoding: 'auto'
+    WriteBOM: false
+    Title: 'UMN SCCM Application Categorization Tool'
+    Product: 'UMN SCCM Application Categorization Tool'
+    Description: 'A tool to quickly manage which applications are in which catagories in SCCM.'
+    Company: 'University of Minnesota'
+    VersionNumber: '$(Build.BuildNumber)'
+    FileVersionNumber: '1.0.*.*'
 
 - task: VSBuild@1
   inputs:
@@ -34,3 +59,29 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: DeleteFiles@1
+  inputs:
+    SourceFolder: 
+    Contents: '**\Microsoft.ConfigurationManagement.ManagementProvider.dll
+      **\AdminUI.WqlQueryEngine.dll'
+
+- task: CopyFiles@2
+  inputs:
+    TargetFolder: '$(Build.BinariesDirectory)'
+    Contents: 'UMN-SCCMApplicationCategorization\bin\Release\**\**'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)\UMN-SCCMApplicationCategorization\bin\Release'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildNumber).zip'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'app'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.Repository.LocalPath)'
+    ArtifactName: 'source'
